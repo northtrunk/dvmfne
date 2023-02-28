@@ -1,0 +1,20 @@
+[tool.pdm]
+
+[project]
+name = "dvmfne"
+version = "1.0.0"
+description = "HBlink-based fixed networking servers used to link DVMs together."
+authors = [{ name = "K4YT3X", email = "i@k4yt3x.com" }]
+dependencies = [
+  "bitstring>=3.1.5",
+  "bitarray>=0.8.1",
+  "Twisted>=16.3.0",
+  "mysql-connector>=2.2.9",
+]
+requires-python = ">=3.9"
+readme = "README.md"
+license = { text = "GPL-2.0-or-later" }
+
+[build-system]
+requires = ["pdm-pep517>=1.0.0"]
+build-backend = "pdm.pep517.api"
