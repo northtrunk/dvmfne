@@ -1,0 +1,13 @@
+[Unit]
+Description=DVMFNE Parrot
+After=network.target
+
+[Service]
+RestartSec=2s
+Type=simple
+WorkingDirectory=/usr/local/share/dvmfne
+ExecStart=/usr/bin/python3 /usr/local/share/dvmfne/dvmfne/fne_parrot.py -c /etc/dvmfne/fne_parrot.cfg
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
