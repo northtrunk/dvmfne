@@ -1,16 +1,14 @@
 # Digital Voice Modem Fixed Network Equipment
 
-**DEPRECATED DEPRECATED DEPRECATED**
-
 The DVM FNE provides server-side linking software to connect multiple DVMs together in an integrated network.
 
-This project is a direct fork of the HBlink (https://github.com/HBLink-org/HBLink) project.
-
-Please feel free to reach out to us for help, comments or otherwise, on our Discord: https://discord.gg/3pBe8xgrEz
+This project is a fork of the [dvmfne](https://github.com/DVMProject/dvmfne) project.
 
 ## Quick Setup Instructions
 
-1. Ensure python3.9, python3.9-venv, python3.9-dev are installed via apt/your favorite package maneger.
+> **Warning**: These instructions are outdated.
+
+1. Ensure python3.9, python3.9-venv, python3.9-dev are installed via apt/your favorite package manager.
 2. Create the virtualenv and activate it with `python3.9 -m venv . && source bin/activate`
 3. Install requirements: `pip install wheel && pip install -r requirements.txt`
 4. Set up your config file and rules
@@ -18,4 +16,5 @@ Please feel free to reach out to us for help, comments or otherwise, on our Disc
 
 ## License
 
-This project is licensed under the GPLv2 License - see the [LICENSE.md](LICENSE.md) file for details. Use of this project is intended, strictly for amateur and educational use ONLY. Any other use is at the risk of user and all commercial purposes are strictly forbidden.
+This project is licensed under the [GNU General Public License Version 2 (GNU GPL v2)](https://www.gnu.org/licenses/gpl-2.0.txt).\
+Copyright (c) 2023 K4YT3X and contributors.
