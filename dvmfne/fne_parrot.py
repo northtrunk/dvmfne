@@ -314,7 +314,7 @@ class parrotFNE(coreFNE):
         _data,
     ):
         pkt_time = time()
-        p25pkt = _data[24:178]
+        p25pkt = _data[24:]
         _slot = 1  # fake the slot data, P25 doesn't have this
 
         if _call_type == "group":
@@ -375,7 +375,7 @@ class parrotFNE(coreFNE):
                 )
                 for _peer in self.CALL_DATA:
                     self.send_peers(_peer)
-                    sleep(0.06)
+                    sleep(0.12)
                 self.CALL_DATA = []
 
             else:
