@@ -1,0 +1,13 @@
+[Unit]
+Description=DVMFNE Monitor
+After=network.target
+
+[Service]
+RestartSec=2s
+Type=simple
+WorkingDirectory=/usr/local/share/dvmfne/dvmfne/monitor
+ExecStart=/usr/bin/python3 /usr/local/share/dvmfne/dvmfne/monitor/fnemon.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
