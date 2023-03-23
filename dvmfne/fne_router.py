@@ -35,6 +35,11 @@ from importlib import import_module
 from time import time
 
 from bitarray import bitarray
+from twisted.internet import reactor, task
+from twisted.internet.protocol import Factory, Protocol
+from twisted.protocols.basic import NetstringReceiver
+from twisted.python import log
+
 from dmr_utils import bptc, const, lc
 from fne import fne_config, fne_const, fne_log
 from fne.fne_core import (
@@ -49,10 +54,6 @@ from fne.fne_core import (
     short_to_bytes,
     systems,
 )
-from twisted.internet import reactor, task
-from twisted.internet.protocol import Factory, Protocol
-from twisted.protocols.basic import NetstringReceiver
-from twisted.python import log
 
 # ---------------------------------------------------------------------------
 #   Module Routines
@@ -117,8 +118,8 @@ def make_rules(_fne_routing_rules):
             _rule["SRC_TS"] = _rule["SRC_TS"]
             _rule["DST_TS"] = _rule["DST_TS"]
 
-            if rule_file.RULES[_system]["SEND_TGID"] == True:
-                if _rule["ACTIVE"] == True:
+            if rule_file.RULES[_system]["SEND_TGID"] is True:
+                if _rule["ACTIVE"] is True:
                     config["Systems"][_system]["ACTIVE_TG_IDS"][_rule["SRC_GROUP"]] = (
                         _rule["NAME"],
                         _rule["SRC_TS"],
@@ -131,7 +132,7 @@ def make_rules(_fne_routing_rules):
             config["Systems"][_system]["TG_IGNORE_IDS"][_rule["SRC_GROUP"]] = [
                 int(x) for x in _rule["IGNORED"]
             ]
-            if _rule["AFFILIATED"] == True:
+            if _rule["AFFILIATED"] is True:
                 config["Systems"][_system]["TG_ALLOW_AFF"].append(_rule["SRC_GROUP"])
 
             for i, e in enumerate(_rule["ON"]):
@@ -178,10 +179,10 @@ def rule_timer_loop():
     _now = time()
     for _system in RULES:
         for _rule in RULES[_system]["GROUP_VOICE"]:
-            if _rule["ACTIVE"] == False:
+            if _rule["ACTIVE"] is False:
                 continue
             if _rule["TO_TYPE"] == "ON":
-                if _rule["ROUTABLE"] == True:
+                if _rule["ROUTABLE"] is True:
                     if _rule["TIMER"] < _now:
                         _rule["ROUTABLE"] = False
                         logger.info(
@@ -204,7 +205,7 @@ def rule_timer_loop():
                             _rule["DST_GROUP"],
                         )
             elif _rule["TO_TYPE"] == "OFF":
-                if _rule["ROUTABLE"] == False:
+                if _rule["ROUTABLE"] is False:
                     if _rule["TIMER"] < _now:
                         _rule["ROUTABLE"] = True
                         logger.info(
@@ -316,7 +317,7 @@ class routerFNE(coreFNE):
     ):
         pkt_time = time()
 
-        if get_valid(_rf_src, black_rids) == True:
+        if get_valid(_rf_src, black_rids) is True:
             if _stream_id != self.STATUS[_slot]["RX_STREAM_ID"]:
                 # Mark status variables for use later
                 self.STATUS[_slot]["RX_START"] = pkt_time
@@ -349,9 +350,9 @@ class routerFNE(coreFNE):
             return True
 
         if _call_type == "group":
-            if (RULES[self._system]["SEND_TGID"] == True) and (
+            if (RULES[self._system]["SEND_TGID"] is True) and (
                 get_valid(_dst_id, config["Systems"][self._system]["ACTIVE_TG_IDS"])
-                == False
+                is False
             ):
                 if _stream_id != self.STATUS[_slot]["RX_STREAM_ID"]:
                     # Mark status variables for use later
@@ -548,8 +549,8 @@ class routerFNE(coreFNE):
                 if (
                     rule["SRC_GROUP"] == _dst_id
                     and rule["SRC_TS"] == _slot
-                    and rule["ACTIVE"] == True
-                    and rule["ROUTABLE"] == True
+                    and rule["ACTIVE"] is True
+                    and rule["ROUTABLE"] is True
                 ):
                     # BEGIN CONTENTION HANDLING
                     #
@@ -930,8 +931,8 @@ class routerFNE(coreFNE):
                         _slot == rule["SRC_TS"]
                         and _dst_id == rule["SRC_GROUP"]
                         and (
-                            (rule["TO_TYPE"] == "ON" and (rule["ROUTABLE"] == True))
-                            or (rule["TO_TYPE"] == "OFF" and rule["ROUTABLE"] == False)
+                            (rule["TO_TYPE"] == "ON" and (rule["ROUTABLE"] is True))
+                            or (rule["TO_TYPE"] == "OFF" and rule["ROUTABLE"] is False)
                         )
                     ):
                         rule["TIMER"] = pkt_time + rule["TIMEOUT"]
@@ -1230,7 +1231,7 @@ class routerFNE(coreFNE):
         pkt_time = time()
         _slot = 1
 
-        if get_valid(_rf_src, black_rids) == True:
+        if get_valid(_rf_src, black_rids) is True:
             if _stream_id != self.STATUS[_slot]["RX_STREAM_ID"]:
                 # Mark status variables for use later
                 self.STATUS[_slot]["RX_START"] = pkt_time
@@ -1266,9 +1267,9 @@ class routerFNE(coreFNE):
             return True
 
         if _call_type == "group":
-            if (RULES[self._system]["SEND_TGID"] == True) and (
+            if (RULES[self._system]["SEND_TGID"] is True) and (
                 get_valid(_dst_id, config["Systems"][self._system]["ACTIVE_TG_IDS"])
-                == False
+                is False
             ):
                 if _stream_id != self.STATUS[_slot]["RX_STREAM_ID"]:
                     # Mark status variables for use later
@@ -1299,11 +1300,11 @@ class routerFNE(coreFNE):
 
         elif _call_type == "unit":
             if (
-                get_valid(_rf_src, white_rids) == False
-                and get_valid(_dst_id, white_rids) == False
+                get_valid(_rf_src, white_rids) is False
+                and get_valid(_dst_id, white_rids) is False
             ) or (
-                get_valid(_rf_src, white_rids) == False
-                or get_valid(_dst_id, white_rids) == False
+                get_valid(_rf_src, white_rids) is False
+                or get_valid(_dst_id, white_rids) is False
             ):
                 if _stream_id != self.STATUS[_slot]["RX_STREAM_ID"]:
                     # Mark status variables for use later
@@ -1433,8 +1434,8 @@ class routerFNE(coreFNE):
 
                 if (
                     rule["SRC_GROUP"] == _dst_id
-                    and rule["ACTIVE"] == True
-                    and rule["ROUTABLE"] == True
+                    and rule["ACTIVE"] is True
+                    and rule["ROUTABLE"] is True
                 ):
                     # BEGIN CONTENTION HANDLING
                     #
@@ -1625,8 +1626,8 @@ class routerFNE(coreFNE):
 
                     # TGID matches a rule source, reset its timer
                     if _dst_id == rule["SRC_GROUP"] and (
-                        (rule["TO_TYPE"] == "ON" and (rule["ROUTABLE"] == True))
-                        or (rule["TO_TYPE"] == "OFF" and rule["ROUTABLE"] == False)
+                        (rule["TO_TYPE"] == "ON" and (rule["ROUTABLE"] is True))
+                        or (rule["TO_TYPE"] == "OFF" and rule["ROUTABLE"] is False)
                     ):
                         rule["TIMER"] = pkt_time + rule["TIMEOUT"]
                         self._logger.info(
@@ -1823,7 +1824,7 @@ class routerFNE(coreFNE):
             get_valid_ignore(
                 _peer_id, _dst_id, config["Systems"][self._system]["TG_IGNORE_IDS"]
             )
-            == True
+            is True
         ):
             if _dst_id in config["Systems"][self._system]["TG_ALLOW_AFF"]:
                 if _peer_id in GRP_AFF.keys():
@@ -1832,7 +1833,7 @@ class routerFNE(coreFNE):
                             return False
 
             if _stream_id != self.STATUS[_slot]["RX_STREAM_ID"]:
-                if _is_source == True:
+                if _is_source is True:
                     # Mark status variables for use later
                     self.STATUS[_slot]["RX_PEER_ID"] = _peer_id
                     self.STATUS[_slot]["RX_RFS"] = _rf_src
@@ -1955,10 +1956,10 @@ class routerFNE(coreFNE):
         self._logger.debug("(ALL SYSTEMS) RID/TID update timer loop started")
         global RULES
         try:
-            if RULES[self._system]["MASTER"] == True:
+            if RULES[self._system]["MASTER"] is True:
                 RULES = make_rules("fne_routing_rules")
 
-            if RULES[self._system]["SEND_TGID"] == True:
+            if RULES[self._system]["SEND_TGID"] is True:
                 _tg_ids = config["Systems"][self._system]["ACTIVE_TG_IDS"]
                 if _tg_ids:
                     self._logger.debug(
